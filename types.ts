@@ -10,7 +10,8 @@ export interface Quest {
   title: string;
   description: string;
   category: QuestCategory;
-  unlockCode: string; // The code the user needs to enter to complete the quest
+  unlockCode: string; // The answer to the daily riddle
+  clueLetter?: string; // The letter she receives upon completion
   rewardText: string;
   iconName: string;
 }
@@ -25,5 +26,6 @@ export interface SecretClue {
   id: string;
   text: string;
   note?: string;
-  codeToReveal: string; // The code she needs to enter in the app
+  codeToReveal?: string; // Optional: The final code to enter in the app
+  nextLocation?: string; // Optional: Hint for the next QR code in the chain
 }

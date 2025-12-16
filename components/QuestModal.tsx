@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Quest } from '../types';
-import { X, Gift, HelpCircle, Heart, Star } from 'lucide-react';
+import { X, Gift, HelpCircle, Heart, Star, Puzzle } from 'lucide-react';
 import { getQuestHint } from '../services/geminiService';
 
 interface QuestModalProps {
@@ -70,69 +70,95 @@ const QuestModal: React.FC<QuestModalProps> = ({ quest, isCompleted, onClose, on
 
         {/* Body */}
         <div className="px-8 pb-8 pt-6 overflow-y-auto flex-1 custom-scrollbar">
-          <div className="prose prose-invert max-w-none mb-10">
-            <p className="font-body text-xl md:text-2xl text-slate-300 leading-relaxed text-center font-light">
-              <span className="text-4xl text-rose-500 font-display mr-1">"</span>
-              {quest.description}
-              <span className="text-4xl text-rose-500 font-display ml-1">"</span>
-            </p>
-          </div>
-
+          
           {isCompleted ? (
-            <div className="p-8 bg-gradient-to-br from-emerald-950/40 to-teal-950/40 border border-emerald-500/20 rounded-3xl text-center relative overflow-hidden group">
-              <div className="absolute inset-0 bg-emerald-500/5 group-hover:bg-emerald-500/10 transition-colors"></div>
-              <Gift className="w-12 h-12 text-emerald-400 mx-auto mb-4" />
-              <h3 className="text-2xl font-display text-emerald-200 mb-2">Награда твоя!</h3>
-              <p className="text-emerald-100/70 font-ui text-sm uppercase tracking-widest">{quest.rewardText}</p>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-6">
-               {/* Hint Section */}
-               {!hint && attempts >= 1 && (
-                <button 
-                  onClick={handleGetHint}
-                  disabled={loadingHint}
-                  className="w-full py-2 text-sm text-gold/80 hover:text-gold flex items-center justify-center gap-2 transition-all font-ui tracking-wide uppercase"
-                >
-                  {loadingHint ? (
-                    <span className="animate-pulse">Купидон думает...</span>
-                  ) : (
-                    <>
-                      <Star size={14} className="animate-spin-slow" />
-                      <span>Попросить подсказку</span>
-                    </>
-                  )}
-                </button>
+            <div className="flex flex-col items-center justify-center py-8 animate-fade-in">
+              {quest.clueLetter ? (
+                <>
+                  <div className="relative mb-6">
+                    <div className="absolute inset-0 bg-gold/20 blur-2xl rounded-full animate-pulse"></div>
+                    <div className="w-24 h-24 bg-gradient-to-br from-goldDark to-gold rounded-2xl flex items-center justify-center shadow-2xl ring-2 ring-white/20 transform rotate-3 relative z-10">
+                      <span className="font-display text-6xl text-white drop-shadow-md">{quest.clueLetter}</span>
+                    </div>
+                  </div>
+                  <h3 className="text-2xl font-body text-white mb-2 font-bold">Буква найдена!</h3>
+                  <p className="text-slate-400 text-center text-sm mb-6 max-w-xs">
+                    Сохрани её. Она понадобится для финального признания.
+                  </p>
+                </>
+              ) : (
+                <div className="p-8 bg-gradient-to-br from-emerald-950/40 to-teal-950/40 border border-emerald-500/20 rounded-3xl text-center relative overflow-hidden group w-full mb-6">
+                   <Gift className="w-12 h-12 text-emerald-400 mx-auto mb-4" />
+                   <h3 className="text-2xl font-display text-emerald-200 mb-2">Победа!</h3>
+                   <p className="text-emerald-100/70 font-ui text-sm uppercase tracking-widest">{quest.rewardText}</p>
+                </div>
               )}
               
-              {hint && (
-                <div className="p-6 bg-indigo-950/30 border-l-2 border-gold/50 rounded-r-xl">
-                  <p className="text-indigo-200 font-body text-xl italic">{hint}</p>
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit} className="space-y-6 mt-4">
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={code}
-                    onChange={(e) => setCode(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-white placeholder-white/10 focus:outline-none focus:ring-1 focus:ring-rose-500/50 text-center tracking-[0.5em] text-xl uppercase font-ui transition-all"
-                    placeholder="КОД"
-                  />
-                </div>
-                
-                {error && <p className="text-rose-400 text-lg text-center font-body italic">{error}</p>}
-
-                <button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-rose-700 to-indigo-700 text-white font-ui font-semibold uppercase tracking-[0.2em] py-4 rounded-xl shadow-lg shadow-rose-900/20 flex items-center justify-center gap-3 transition-all transform hover:scale-[1.01] hover:shadow-rose-900/40 text-sm border border-white/5"
-                >
-                  <Heart className="fill-current w-4 h-4" />
-                  Открыть
-                </button>
-              </form>
+              <button 
+                onClick={onClose}
+                className="px-8 py-3 bg-white/10 hover:bg-white/20 rounded-full text-white font-ui tracking-widest transition-colors"
+              >
+                ДАЛЕЕ
+              </button>
             </div>
+          ) : (
+            <>
+              <div className="prose prose-invert max-w-none mb-10">
+                <p className="font-body text-xl md:text-2xl text-slate-300 leading-relaxed text-center font-light">
+                  <span className="text-4xl text-rose-500 font-display mr-1">"</span>
+                  {quest.description}
+                  <span className="text-4xl text-rose-500 font-display ml-1">"</span>
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-6">
+                 {/* Hint Section */}
+                 {!hint && attempts >= 1 && (
+                  <button 
+                    onClick={handleGetHint}
+                    disabled={loadingHint}
+                    className="w-full py-2 text-sm text-gold/80 hover:text-gold flex items-center justify-center gap-2 transition-all font-ui tracking-wide uppercase"
+                  >
+                    {loadingHint ? (
+                      <span className="animate-pulse">Купидон думает...</span>
+                    ) : (
+                      <>
+                        <Star size={14} className="animate-spin-slow" />
+                        <span>Попросить подсказку</span>
+                      </>
+                    )}
+                  </button>
+                )}
+                
+                {hint && (
+                  <div className="p-6 bg-indigo-950/30 border-l-2 border-gold/50 rounded-r-xl">
+                    <p className="text-indigo-200 font-body text-xl italic">{hint}</p>
+                  </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="space-y-6 mt-4">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={code}
+                      onChange={(e) => setCode(e.target.value)}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-white placeholder-white/10 focus:outline-none focus:ring-1 focus:ring-rose-500/50 text-center tracking-[0.5em] text-xl uppercase font-ui transition-all"
+                      placeholder="ОТВЕТ"
+                    />
+                  </div>
+                  
+                  {error && <p className="text-rose-400 text-lg text-center font-body italic">{error}</p>}
+
+                  <button
+                    type="submit"
+                    className="w-full bg-gradient-to-r from-rose-700 to-indigo-700 text-white font-ui font-semibold uppercase tracking-[0.2em] py-4 rounded-xl shadow-lg shadow-rose-900/20 flex items-center justify-center gap-3 transition-all transform hover:scale-[1.01] hover:shadow-rose-900/40 text-sm border border-white/5"
+                  >
+                    <Puzzle className="fill-current w-4 h-4" />
+                    ПРОВЕРИТЬ
+                  </button>
+                </form>
+              </div>
+            </>
           )}
         </div>
       </div>

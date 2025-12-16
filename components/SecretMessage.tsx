@@ -1,6 +1,6 @@
 import React from 'react';
 import { SecretClue } from '../types';
-import { Heart, Stars, Unlock, Copy } from 'lucide-react';
+import { Heart, Stars, Unlock, MapPin } from 'lucide-react';
 
 interface SecretMessageProps {
   clue: SecretClue;
@@ -60,21 +60,33 @@ const SecretMessage: React.FC<SecretMessageProps> = ({ clue, onClose }) => {
                     <p className="font-display text-4xl md:text-5xl text-white leading-tight drop-shadow-lg mt-2 text-right p-2 opacity-50">"</p>
                 </div>
 
-                {/* Code Reveal Section */}
-                <div className="mb-8 bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-sm">
-                    <p className="text-slate-400 text-xs uppercase tracking-widest mb-2 font-ui">Код доступа</p>
-                    <div className="flex items-center justify-center gap-3">
-                        <Unlock className="w-5 h-5 text-gold" />
-                        <span className="font-ui text-2xl font-bold text-white tracking-[0.2em]">{clue.codeToReveal}</span>
-                    </div>
-                    <p className="text-white/30 text-xs mt-2 font-body italic">Запомни этот код и введи его в задании</p>
-                </div>
+                {/* Conditional Reveal Section */}
+                {clue.codeToReveal ? (
+                  // Case 1: Final Code
+                  <div className="mb-8 bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-sm animate-pulse-slow">
+                      <p className="text-emerald-400 text-xs uppercase tracking-widest mb-2 font-ui">Код найден</p>
+                      <div className="flex items-center justify-center gap-3">
+                          <Unlock className="w-5 h-5 text-gold" />
+                          <span className="font-ui text-2xl font-bold text-white tracking-[0.2em]">{clue.codeToReveal}</span>
+                      </div>
+                      <p className="text-white/30 text-xs mt-2 font-body italic">Введи этот код, чтобы получить букву</p>
+                  </div>
+                ) : clue.nextLocation ? (
+                  // Case 2: Hint for Next Location
+                  <div className="mb-8 bg-indigo-950/40 border border-indigo-500/20 rounded-xl p-4 backdrop-blur-sm">
+                      <p className="text-indigo-300 text-xs uppercase tracking-widest mb-2 font-ui">Следующий шаг</p>
+                      <div className="flex flex-col items-center justify-center gap-2">
+                          <MapPin className="w-6 h-6 text-indigo-400 animate-bounce" />
+                          <span className="font-body text-xl text-indigo-100 leading-tight">{clue.nextLocation}</span>
+                      </div>
+                  </div>
+                ) : null}
 
                 <button
                     onClick={onClose}
                     className="text-white/40 hover:text-white text-sm font-ui tracking-widest uppercase transition-colors border-b border-transparent hover:border-white/20 pb-1"
                 >
-                    Ввести код
+                    {clue.codeToReveal ? "Ввести код" : "Искать дальше"}
                 </button>
             </div>
         </div>

@@ -5,7 +5,7 @@ import QuestModal from './components/QuestModal';
 import SecretMessage from './components/SecretMessage';
 import { QUESTS, SECRET_CLUES } from './constants';
 import { UserState, Quest } from './types';
-import { Heart, Trophy, Sparkles, Snowflake } from 'lucide-react';
+import { Heart, Trophy, Sparkles, Snowflake, Puzzle } from 'lucide-react';
 
 // Subtle background particle
 const Particle: React.FC<{ delay: number; style: React.CSSProperties }> = ({ delay, style }) => (
@@ -82,13 +82,17 @@ const App: React.FC = () => {
     return 'locked';
   };
 
+  const collectedLetters = QUESTS
+    .filter(q => user.completedDays.includes(q.id) && q.clueLetter)
+    .sort((a, b) => a.day - b.day)
+    .map(q => q.clueLetter);
+
   // If a QR code was scanned, show the Clue Screen immediately (bypassing Login)
   if (foundClueId) {
       const clue = SECRET_CLUES.find(c => c.id === foundClueId);
       if (clue) {
           return <SecretMessage clue={clue} onClose={handleClueClose} />;
       }
-      // If clue ID is invalid, fall through to normal app
   }
 
   if (!user.isAuthenticated) {
@@ -146,7 +150,7 @@ const App: React.FC = () => {
       <main className="container mx-auto px-4 py-12 max-w-6xl relative z-10">
         
         {/* Intro */}
-        <div className="text-center mb-16 relative">
+        <div className="text-center mb-10 relative">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gold/5 blur-[80px] rounded-full pointer-events-none"></div>
           
           <div className="inline-flex items-center gap-3 mb-4 px-5 py-2 rounded-full border border-white/5 bg-white/5 backdrop-blur-sm">
@@ -159,8 +163,31 @@ const App: React.FC = () => {
             15 Steps to Magic
           </h2>
           <p className="font-body text-xl md:text-2xl text-slate-400 max-w-2xl mx-auto leading-relaxed font-light italic">
-            "Каждая загадка — это поцелуй, который я посылаю тебе сквозь расстояние..."
+            "Каждая разгадка дарит тебе букву. Собери их все, чтобы открыть моё сердце..."
           </p>
+        </div>
+
+        {/* Letters Bank */}
+        <div className="mb-12 flex justify-center">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-md max-w-3xl w-full">
+                <div className="flex items-center justify-center gap-2 mb-4">
+                    <Puzzle className="w-4 h-4 text-gold" />
+                    <span className="text-xs font-ui uppercase tracking-widest text-slate-400">Собранные фрагменты</span>
+                </div>
+                <div className="flex flex-wrap justify-center gap-2">
+                    {Array.from({ length: 14 }).map((_, i) => (
+                        <div 
+                            key={i} 
+                            className={`w-10 h-12 rounded-lg flex items-center justify-center font-display text-2xl border transition-all duration-500
+                                ${collectedLetters[i] 
+                                    ? 'bg-gold/10 border-gold/30 text-gold shadow-[0_0_15px_rgba(251,191,36,0.2)]' 
+                                    : 'bg-white/5 border-white/5 text-white/10'}`}
+                        >
+                            {collectedLetters[i] || '?'}
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
 
         {/* Quest Grid */}
@@ -177,7 +204,7 @@ const App: React.FC = () => {
 
         {/* Final Completion Banner */}
         {user.completedDays.length === 15 && (
-          <div className="mt-20 p-12 bg-gradient-to-br from-amber-950/40 to-black border border-gold/20 rounded-[3rem] text-center relative overflow-hidden group shadow-[0_0_100px_rgba(251,191,36,0.1)]">
+          <div className="mt-20 p-12 bg-gradient-to-br from-amber-950/40 to-black border border-gold/20 rounded-[3rem] text-center relative overflow-hidden group shadow-[0_0_100px_rgba(251,191,36,0.1)] animate-fade-in">
             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20"></div>
             <div className="relative z-10">
                 <div className="inline-flex p-6 bg-gold/10 rounded-full mb-6 ring-1 ring-gold/30 backdrop-blur-md">
