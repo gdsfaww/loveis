@@ -1,0 +1,9 @@
+{
+  "name": "Love Quest: 15 Days of Mystery",
+  "description": "A romantic interactive advent calendar with 15 days of quests, hints, and surprises.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}
