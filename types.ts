@@ -24,5 +24,6 @@ export interface UserState {
 export interface SecretClue {
   id: string;
   text: string;
-  note?: string; // Optional distinct note (e.g. "Part 1 of 5")
+  note?: string;
+  codeToReveal: string; // The code she needs to enter in the app
 }
